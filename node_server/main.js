@@ -1,9 +1,10 @@
 const mqtt = require('mqtt');
-const client = mqtt.connect('mqtt://0.tcp.ap.ngrok.io:13392'); // Replace with your MQTT broker URL
+const client = mqtt.connect('mqtt://0.tcp.ap.ngrok.io:15043'); // Replace with your MQTT broker URL
 
 client.on('connect', function () {
   console.log('Connected to MQTT broker!');
   client.subscribe('Temp'); // Replace with the topic you want to subscribe to
+  client.subscribe('Hum');
 });
 
 client.on('message', function (topic, message) {

@@ -15,9 +15,7 @@ from config.database.db import db
 from config.broker.mqtt import mqtt
 from utility.mqtt_management import *
 
-app = Flask(__name__, static_url_path='',
-                  static_folder='public/build',
-                  template_folder='public/build')
+app = Flask(__name__)
 # CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:10018", "https://www.ura.hcmut.edu.vn"], headers=['Content-Type'], expose_headers=['Access-Control-Allow-Origin'], supports_credentials=True)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
