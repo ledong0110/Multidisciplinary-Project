@@ -43,7 +43,25 @@ class Data(Resource):
             data = db.session.query(RoadData).filter(RoadData.device_id == device_id).all()
         return jsonify(data.to_dict())
 
-
+@api.route('/getImage')
+class Data(Resource):
+    @api.expect(dataForm)
+    def get(self, id:int):
+        args = request.args.to_dict()
+        data = None
+        if args["id"]:
+            data = db.session.query(RoadData).filter(RoadData.id == id).first()
+        elif args["device_id"] and args["latest"]:
+            data = db.session.query(RoadData).filter(RoadData.device_id == device_id).order_by(RoadData.id.desc()).first()
+        else:
+            return jsonify({"msg": "Error"}), 500
+        if not data:
+            return jsonify({"msg": "There is no data in database"})
+        image_name = str(data.image)
+        with open(f'{os.environ.get("STORAGE")}/image/{image_name}.jpg', "rb") as f:
+            img = f.read()
+            encodeImage = base64.b64encode(img).decode()
+        return jsonify({"image": encodeImage})
 
 @api.route('/getDeviceInfo')
 class DeviceInfo(Resource):

@@ -11,6 +11,7 @@ class RoadData (db.Model):
     temp  = Column(Float, default=0.0)
     hummid = Column(Float, default=0.0)
     rain = Column(Integer, default=0)
+    flood_level = Column(Integer, default=0)
     image = Column(String(127)) 
 
     def to_dict(self):

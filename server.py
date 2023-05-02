@@ -4,6 +4,7 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 # from flask_jwt_extended import JWTManager
 from flask_mqtt import Mqtt
+from flask_apscheduler import APScheduler
 
 import os
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ from datetime import timedelta
 from app.controllers import api
 from config.database.db import db
 from config.broker.mqtt import mqtt
+from config.scheduler.scheduler import scheduler
 from utility.mqtt_management import *
 
 app = Flask(__name__)
@@ -47,5 +49,8 @@ app.config['MQTT_TLS_ENABLED'] = False  # set TLS to disabled for testing purpos
 api.init_app(app)
 db.init_app(app)
 mqtt.init_app(app)
+scheduler.init_app(app)
+scheduler.start()
+scheduler.add_job(id='publishmqtt', func=publishForEvent, trigger='interval', seconds=10)
 
 
