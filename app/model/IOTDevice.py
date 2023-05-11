@@ -9,6 +9,7 @@ class IOTDevice (db.Model):
     device_id = Column(String(127), nullable=False, unique=True) 
     state = Column(Integer)
     address = Column(String(255), nullable=False) 
+    district = Column(String(255))
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

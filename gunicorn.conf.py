@@ -7,4 +7,5 @@ for env_file in ('.env', '.flaskenv'):
     if os.path.exists(env):
         load_dotenv(env)
 bind = "0.0.0.0:"+os.environ.get("FLASK_RUN_PORT")
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = 2
+preload_app = True
