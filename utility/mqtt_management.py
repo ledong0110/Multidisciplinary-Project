@@ -81,7 +81,7 @@ def handle_mqtt_message(client, userdata, message):
             image = base64.decodebytes(payload["image"].encode())
             f.write(image)
             print("Image Received")
-        with open(f'{os.environ.get("STORAGE")}/device/iot_1.json', 'r') as f:
+        with open(f'{os.environ.get("STORAGE")}/device/{payload["id"]}.json', 'r') as f:
             info = f.read()
         res = fetchImage(payload['image'], payload['id'], info)
         print(res)

@@ -6,7 +6,7 @@ import ast
 import os
 from app.model.IOTDevice import IOTDevice
 from app.model.RoadData import RoadData
-from sqlalchemy import and_
+from sqlalchemy import and_, null
 from config.database.db import db
 import base64
 
@@ -83,13 +83,16 @@ class Data(Resource):
         data = None
         if "id" in args and args["id"]:
             data = db.session.query(RoadData).filter(RoadData.id == args["id"]).first()
-        elif "device_id" in args and "latest" in args and args["device_id"] and args["latest"]:
-            data = db.session.query(RoadData).filter(and_(RoadData.device_id == args["device_id"], RoadData.image.isnot(None))).order_by(RoadData.id.desc()).first()
+        elif "id" in args and "latest" in args and args["id"] and args["latest"]:
+            data = db.session.query(RoadData).filter(and_(RoadData.device_id == args["device_id"], RoadData.image.is_not(None))).order_by(RoadData.id.desc()).first()
         else:
             return jsonify({"msg": "Error"}), 500
         if not data:
             return jsonify({"msg": "There is no data in database"})
-        image_name = str(data.image)
+        print(data.to_dict())
+        image_name = data.image
+        if not image_name:
+            image_name = "test1"
         with open(f'{os.environ.get("STORAGE")}/image/{image_name}.jpg', "rb") as f:
             img = f.read()
             encodeImage = base64.b64encode(img).decode()

@@ -20,37 +20,37 @@ def fetchImage(encodeImage: str, deviceID: str, infoData:str, url = f"{os.enviro
     return res.json()
 
 if __name__ == "__main__":
-    # Test store data
-    data = {
-        "device_id": "iot_1",
-        "temp": 41,
-        "hummid": 85,
-        "rain": 1
-    }
-    storeData(data)
+#     # Test store data
+#     data = {
+#         "device_id": "iot_1",
+#         "temp": 41,
+#         "hummid": 85,
+#         "rain": 1
+#     }
+#     storeData(data)
     
-    #Test store image and flood level
-    data = {
-  "device_id": "iot_1",
-  "image": "test1",
-  "flood_level": 1
-}
-    storeData(data, slug="storeImageName")
-    #Test active device
-    data = {
-  "device_ids": "[]"
-}
-    storeData(data, slug="updateActiveDevice")
-    # with open("../storage/image/test1.jpg", "rb") as f:
-    #     img = f.read()
-    #     encodeImage = base64.b64encode(img).decode()
-    # with open("../storage/device/iot_1.json", 'r') as f:
-    #     info = f.read()
+#     #Test store image and flood level
+#     data = {
+#   "device_id": "iot_1",
+#   "image": "test1",
+#   "flood_level": 1
+# }
+#     storeData(data, slug="storeImageName")
+#     #Test active device
+#     data = {
+#   "device_ids": "[]"
+# }
+#     storeData(data, slug="updateActiveDevice")
+    with open("../storage/image/test1.jpg", "rb") as f:
+        img = f.read()
+        encodeImage = base64.b64encode(img).decode()
+    with open("../storage/device/iot_1.json", 'r') as f:
+        info = f.read()
 
-    # deviceID = "iot_1"
-    # url = "http://0.0.0.0:8000/home/sendImage"
-    # res = fetchImage(encodeImage, deviceID, info, url)
-    # print(res)
+    deviceID = "iot_1"
+    url = "https://cec2-2402-800-6374-9d16-25e9-218-d153-a67f.ngrok-free.app/home/sendImage"
+    res = fetchImage(encodeImage, deviceID, info, url)
+    print(res)
     
     
     # list_1 = [[61, 143], [59, 210], [122, 145], [120, 209], [181, 143], [181, 209], [661, 141], [660, 210], [721, 143], [721, 216], [750, 141], [751, 219], [780, 140], [781, 215]]

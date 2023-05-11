@@ -7,5 +7,5 @@ for env_file in ('.env', '.flaskenv'):
     if os.path.exists(env):
         load_dotenv(env)
 bind = "0.0.0.0:"+os.environ.get("FLASK_RUN_PORT")
-workers = 2
+workers = 4
 preload_app = True

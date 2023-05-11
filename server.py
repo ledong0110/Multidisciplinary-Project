@@ -50,10 +50,10 @@ app.config['SCHEDULER_EXECUTORS'] = {"default": {"type": "threadpool", "max_work
 
 api.init_app(app)
 db.init_app(app)
-# mqtt.init_app(app)
+mqtt.init_app(app)
 scheduler.init_app(app)
 scheduler.start()
-scheduler.add_job(id='publishmqtt', func=publishForEvent, trigger='interval', seconds=20)
+scheduler.add_job(id='publishmqtt', func=publishForEvent, trigger='interval', seconds=15)
     
 
 
