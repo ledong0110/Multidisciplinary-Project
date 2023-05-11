@@ -9,10 +9,15 @@ from config.database.db import db
 import ast
 import requests
 import uuid
-from utility.requestAIServer import fetchImage
+from utility.request_handling import fetchImage, storeData
+
+
+
 
 def publishForEvent():
-    mqtt.publish('iot_1/capture', 'send image')
+
+    print("Call send image")
+    mqtt.publish('iot/capture', 'send image')
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
@@ -20,7 +25,9 @@ def handle_connect(client, userdata, flags, rc):
        print('Connected successfully')
        mqtt.subscribe('weather_data')
        mqtt.subscribe('image')
-       
+       mqtt.subscribe('active_device')
+    #    time.sleep(2)
+       mqtt.publish('iot/server', 'send active devices')
        
     # subscribe topic
     #    mqtt.subscribe('weather_data')
@@ -56,10 +63,15 @@ def handle_mqtt_message(client, userdata, message):
         # print(message.payload)
         msg = str(message.payload.decode("utf-8", "ignore"))
         payload = ast.literal_eval(msg)
+        print(payload)
+        data = {
+            "device_id": payload['id'],
+            "temp": payload['temp'],
+            "hummid": payload['hum'],
+            "rain": payload['rain']
+        }
+        storeData(data)
         
-        roadData = RoadData(device_id=payload["id"], temp=payload["temp"], humid=payload["hum"], rain=payload["rain"])
-        db.session.add(roadData)
-        db.session.commit()
     elif topic == "image":
         msg = str(message.payload.decode("utf-8", "ignore"))
         payload = ast.literal_eval(msg)
@@ -69,11 +81,16 @@ def handle_mqtt_message(client, userdata, message):
             image = base64.decodebytes(payload["image"].encode())
             f.write(image)
             print("Image Received")
-        res = fetchImage(payload['image'].decode(), payload['id'])
-        roadData = db.session.query(RoadData).filter(RoadData.device_id == payload['id']).order_by(RoadData.id.desc()).first()
-        roadData.image = image_name
-        roadData.flood_level = int(res['level'])
-        db.session.commit()
+        with open(f'{os.environ.get("STORAGE")}/device/iot_1.json', 'r') as f:
+            info = f.read()
+        res = fetchImage(payload['image'], payload['id'], info)
+        print(res)
+        data = {
+            "device_id": payload['id'],
+            "image": image_name,
+            "flood_level": res["level"]
+        }
+        storeData(data, slug="storeImageName")
     # 
     # print('Received message on topic: {topic} with payload: {payload}'.format(**data)) 
     
@@ -84,10 +101,15 @@ def handle_mqtt_message(client, userdata, message):
 
 
         ######################
-    # elif topic == "active_device":
-    #     payload = json.loads(message.payload)
-    #     if int(payload["state"]):
-    #         db.session.query(IOTDevice).filter(IOTDevice.device_id == payload["id"]).update({"state": 0}, synchronize_session = False)
-    #     else:
-    #         db.session.query(IOTDevice).filter(IOTDevice.device_id == payload["id"]).update({"state": 1}, synchronize_session = False)
-    #     db.session.commit()
+    elif topic == "active_device":
+        msg = str(message.payload.decode("utf-8", "ignore"))
+        print(msg)
+        data = {
+            "device_ids": msg
+        }
+        storeData(data, slug="updateActiveDevice")
+        # if int(payload["state"]):
+        #     db.session.query(IOTDevice).filter(IOTDevice.device_id == payload["id"]).update({"state": 0}, synchronize_session = False)
+        # else:
+        #     db.session.query(IOTDevice).filter(IOTDevice.device_id == payload["id"]).update({"state": 1}, synchronize_session = False)
+        # db.session.commit()
